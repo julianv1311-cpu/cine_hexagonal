@@ -1,0 +1,94 @@
+{#include layout}
+{#title}Nueva reserva{/title}
+{#main}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/reservations" class="link-secondary">Reservas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Nueva</li>
+    </ol>
+</nav>
+
+<h1 class="h3 fw-bold mb-4"><i class="bi bi-calendar-plus text-warning"></i> Registrar reserva</h1>
+
+<div class="row g-4">
+    <section class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                {#if guestOptions.isEmpty()}
+                <div class="alert alert-warning">
+                    No hay huéspedes registrados. <a class="alert-link" href="/guests">Registre un huésped</a> antes de reservar.
+                </div>
+                {/if}
+                <form method="post" action="/reservations">
+                    <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-3">1. ¿Quién y dónde?</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label" for="guestId">Huésped</label>
+                            <select class="form-select" id="guestId" name="guestId" required>
+                                <option value="">Seleccione el huésped...</option>
+                                {#for option in guestOptions}
+                                <option value="{option.value}" {#if option.selected}selected{/if}>{option.label}</option>
+                                {/for}
+                            </select>
+                            <div class="form-text">¿No aparece? <a href="/guests">Registrar huésped</a></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="roomId">Habitación</label>
+                            <select class="form-select" id="roomId" name="roomId" required>
+                                <option value="">Seleccione la habitación...</option>
+                                {#for option in roomOptions}
+                                <option value="{option.value}" {#if option.selected}selected{/if}>{option.label}</option>
+                                {/for}
+                            </select>
+                            <div class="form-text">Las habitaciones en mantenimiento no aparecen.</div>
+                        </div>
+                    </div>
+
+                    <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-3">2. ¿Cuándo y cuántos?</h2>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="checkIn">Fecha de entrada</label>
+                            <input class="form-control" id="checkIn" name="checkIn" type="date" min="{today}" value="{form.checkIn}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="checkOut">Fecha de salida</label>
+                            <input class="form-control" id="checkOut" name="checkOut" type="date" min="{today}" value="{form.checkOut}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="guestsCount">Huéspedes</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-people"></i></span>
+                                <input class="form-control" id="guestsCount" name="guestsCount" type="number" min="1" max="8"
+                                       value="{form.guestsCount}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+                        <button class="btn btn-success rounded-pill px-4" type="submit"><i class="bi bi-check2-circle"></i> Confirmar reserva</button>
+                        <a class="btn btn-outline-secondary rounded-pill px-4" href="/reservations">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <aside class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 text-bg-dark">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-warning fw-semibold mb-3"><i class="bi bi-shield-check"></i> Reglas de la reserva</h2>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2"><i class="bi bi-check2 text-warning"></i> La entrada no puede ser antes de hoy y la salida debe ser posterior.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-warning"></i> Estadía máxima de 30 noches.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-warning"></i> No se supera la capacidad de la habitación.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-warning"></i> No se cruzan fechas con otra reserva activa.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-warning"></i> Recargo del 15% en noches de viernes y sábado.</li>
+                    <li><i class="bi bi-check2 text-warning"></i> 10% de descuento por 7 noches o más.</li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+</div>
+
+{/main}
+{/include}

@@ -1,0 +1,90 @@
+{#include layout}
+{#title}Reservas{/title}
+{#main}
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-0"><i class="bi bi-calendar-check text-warning"></i> Reservas</h1>
+        <p class="text-body-secondary mb-0">Llegadas, estadías y salidas del hotel</p>
+    </div>
+    <a class="btn btn-warning rounded-pill px-4 fw-semibold" href="/reservations/new"><i class="bi bi-calendar-plus"></i> Nueva reserva</a>
+</div>
+
+<nav class="mb-3" aria-label="Filtrar por estado">
+    <div class="d-flex flex-wrap gap-2">
+        {#for f in filters}
+        <a class="btn btn-sm rounded-pill {#if f.active}btn-dark{#else}btn-outline-secondary{/if}"
+           href="/reservations{#if f.value}?status={f.value}{/if}">
+            {f.label} <span class="badge rounded-pill {#if f.active}text-bg-warning{#else}bg-body-secondary text-body{/if}">{f.count}</span>
+        </a>
+        {/for}
+    </div>
+</nav>
+
+{#if reservations.isEmpty()}
+<div class="alert alert-info">No hay reservas para mostrar.</div>
+{#else}
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col" class="ps-4">#</th>
+                <th scope="col">Huésped</th>
+                <th scope="col">Habitación</th>
+                <th scope="col">Estadía</th>
+                <th scope="col" class="text-end">Total</th>
+                <th scope="col">Estado</th>
+                <th scope="col" class="text-end pe-4">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for r in reservations}
+            <tr>
+                <td class="ps-4"><a href="/reservations/{r.id}" class="fw-semibold link-underline link-underline-opacity-0">#{r.id}</a></td>
+                <td>
+                    <div class="fw-semibold">{r.guestName}</div>
+                    <div class="small text-body-secondary">{r.guestDocument}</div>
+                </td>
+                <td><span class="badge bg-body-secondary text-body">{r.roomNumber}</span> <span class="small text-body-secondary">{r.roomType}</span></td>
+                <td class="small">
+                    <div><i class="bi bi-box-arrow-in-right text-success"></i> {r.checkIn}</div>
+                    <div><i class="bi bi-box-arrow-right text-danger"></i> {r.checkOut} <span class="text-body-secondary">({r.nights} noches)</span></div>
+                </td>
+                <td class="text-end fw-semibold">${r.total}</td>
+                <td><span class="badge rounded-pill {r.statusCss}">{r.statusLabel}</span></td>
+                <td class="pe-4">
+                    <div class="d-flex flex-wrap justify-content-end gap-1">
+                        {#if r.canCheckIn}
+                        <form method="post" action="/reservations/{r.id}/check-in">
+                            <input type="hidden" name="from" value="{back}">
+                            <button class="btn btn-sm btn-success rounded-pill" type="submit" title="Registrar llegada"><i class="bi bi-box-arrow-in-right"></i> Check-in</button>
+                        </form>
+                        {/if}
+                        {#if r.canCheckOut}
+                        <form method="post" action="/reservations/{r.id}/check-out">
+                            <input type="hidden" name="from" value="{back}">
+                            <button class="btn btn-sm btn-primary rounded-pill" type="submit" title="Registrar salida"><i class="bi bi-box-arrow-right"></i> Check-out</button>
+                        </form>
+                        {/if}
+                        {#if r.canCancel}
+                        <form method="post" action="/reservations/{r.id}/cancel"
+                              onsubmit="return confirm('¿Cancelar la reserva #{r.id}? Esta acción no se puede deshacer.');">
+                            <input type="hidden" name="from" value="{back}">
+                            <button class="btn btn-sm btn-outline-danger rounded-pill" type="submit" title="Cancelar reserva"><i class="bi bi-x-lg"></i></button>
+                        </form>
+                        {/if}
+                        <a class="btn btn-sm btn-outline-secondary rounded-pill" href="/reservations/{r.id}" title="Ver detalle"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-sm btn-outline-primary rounded-pill" href="/reports/receipt/{r.id}.pdf" title="Comprobante PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+
+{/main}
+{/include}

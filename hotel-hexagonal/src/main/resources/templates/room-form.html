@@ -1,0 +1,105 @@
+{#include layout}
+{#title}{#if editing}Editar habitación{#else}Nueva habitación{/if}{/title}
+{#main}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/" class="link-secondary">Habitaciones</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{#if editing}Editar {form.number}{#else}Nueva{/if}</li>
+    </ol>
+</nav>
+
+<h1 class="h3 fw-bold mb-4">
+    <i class="bi bi-door-open text-warning"></i> {#if editing}Editar habitación {form.number}{#else}Registrar habitación{/if}
+</h1>
+
+<form method="post" action="{#if editing}/rooms/{form.id}{#else}/rooms{/if}">
+<div class="row g-4">
+    <section class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-3">Datos de la habitación</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="number">Número</label>
+                        <input class="form-control" id="number" name="number" value="{form.number}"
+                               placeholder="101" required minlength="2" maxlength="4" inputmode="numeric" title="Entre 2 y 4 dígitos">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="capacity">Capacidad</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-people"></i></span>
+                            <input class="form-control" id="capacity" name="capacity" type="number" min="1" max="6"
+                                   value="{form.capacity}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="price">Precio por noche</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input class="form-control" id="price" name="price" value="{form.price}"
+                                   placeholder="180000" required inputmode="decimal">
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <p class="form-text mb-2"><i class="bi bi-info-circle"></i> Viernes y sábado +15%. Estadías de 7 noches o más -10%.</p>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="description">Descripción</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  maxlength="255" placeholder="Cama queen, balcón y minibar">{form.description}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-1">Tipo de habitación</h2>
+                <p class="small text-body-secondary mb-3">La foto que se muestra en el sistema corresponde al tipo elegido.</p>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3">
+                    {#for t in types}
+                    <div class="col">
+                        <input type="radio" class="btn-check" name="type" id="type-{t.key}" value="{t.value}"
+                               autocomplete="off" required {#if t.selected}checked{/if}>
+                        <label class="btn btn-outline-warning w-100 h-100 p-1 rounded-4" for="type-{t.key}">
+                            <span class="ratio ratio-4x3 d-block">
+                                {#if t.photoUrl}
+                                <img src="{t.photoUrl}" class="object-fit-cover rounded-3" alt="Habitación {t.value}">
+                                {#else}
+                                <span class="bg-secondary-subtle text-secondary-emphasis rounded-3 d-flex align-items-center justify-content-center">
+                                    <i class="bi {t.icon} fs-1"></i>
+                                </span>
+                                {/if}
+                            </span>
+                            <span class="d-block fw-semibold pt-1"><i class="bi {t.icon}"></i> {t.value}</span>
+                            <span class="d-block small text-body-secondary pb-1">Hasta {t.maxCapacity} huésped(es)</span>
+                        </label>
+                    </div>
+                    {/for}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <aside class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-3"><i class="bi bi-shield-check text-warning"></i> Reglas</h2>
+                <ul class="list-unstyled small mb-4">
+                    <li class="mb-2"><i class="bi bi-check2 text-success"></i> El número no se puede repetir.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-success"></i> El precio debe ser mayor a 0.</li>
+                    <li class="mb-2"><i class="bi bi-check2 text-success"></i> Capacidad máxima: Sencilla 1, Doble 2, Suite Panorámica 2, Suite Dúplex 4, Familiar 6.</li>
+                </ul>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success rounded-pill" type="submit"><i class="bi bi-save"></i> Guardar</button>
+                    <a class="btn btn-outline-secondary rounded-pill" href="/">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+</form>
+
+{/main}
+{/include}

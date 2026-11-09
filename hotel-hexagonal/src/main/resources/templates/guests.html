@@ -1,0 +1,104 @@
+{#include layout}
+{#title}Huéspedes{/title}
+{#main}
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-0"><i class="bi bi-people text-warning"></i> Huéspedes</h1>
+        <p class="text-body-secondary mb-0">Personas registradas en el hotel</p>
+    </div>
+    <span class="badge rounded-pill text-bg-dark fs-6"><span class="text-warning">{guests.size()}</span> registrados</span>
+</div>
+
+<div class="row g-4">
+    <section class="col-lg-8">
+        {#if guests.isEmpty()}
+        <div class="alert alert-info">Todavía no hay huéspedes. Registre el primero con el formulario.</div>
+        {#else}
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="ps-4">Huésped</th>
+                        <th scope="col">Documento</th>
+                        <th scope="col">Contacto</th>
+                        <th scope="col">Ciudad</th>
+                        <th scope="col">Registro</th>
+                        <th scope="col" class="text-end pe-4">Reservar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {#for g in guests}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="rounded-circle bg-warning-subtle text-warning-emphasis p-2 lh-1"><i class="bi bi-person-fill"></i></span>
+                                <span class="fw-semibold">{g.fullName}</span>
+                            </div>
+                        </td>
+                        <td>{g.document}</td>
+                        <td class="small">
+                            <div><i class="bi bi-envelope text-body-secondary"></i> {g.email}</div>
+                            <div><i class="bi bi-telephone text-body-secondary"></i> {g.phone}</div>
+                        </td>
+                        <td><i class="bi bi-geo-alt text-body-secondary"></i> {g.city}</td>
+                        <td><span class="badge bg-body-secondary text-body"><i class="bi bi-calendar3"></i> {g.registeredAt}</span></td>
+                        <td class="text-end pe-4">
+                            <a class="btn btn-sm btn-warning rounded-pill" href="/reservations/new?guestId={g.id}" title="Reservar para {g.fullName}">
+                                <i class="bi bi-calendar-plus"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {/for}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {/if}
+    </section>
+
+    <aside class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-person-plus text-warning"></i> Registrar huésped</h2>
+                <form method="post" action="/guests">
+                    <div class="mb-3">
+                        <label class="form-label" for="document">Documento</label>
+                        <input class="form-control" id="document" name="document" value="{form.document}"
+                               required minlength="5" maxlength="15" title="Entre 5 y 15 dígitos" inputmode="numeric">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label" for="firstName">Nombre</label>
+                            <input class="form-control" id="firstName" name="firstName" value="{form.firstName}" required maxlength="60">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="lastName">Apellidos</label>
+                            <input class="form-control" id="lastName" name="lastName" value="{form.lastName}" required maxlength="60">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Correo electrónico</label>
+                        <input class="form-control" id="email" name="email" type="email" value="{form.email}" required maxlength="150">
+                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <label class="form-label" for="phone">Teléfono</label>
+                            <input class="form-control" id="phone" name="phone" value="{form.phone}" required
+                                   minlength="7" maxlength="15" title="Entre 7 y 15 dígitos" inputmode="tel">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="city">Ciudad</label>
+                            <input class="form-control" id="city" name="city" value="{form.city}" maxlength="60">
+                        </div>
+                    </div>
+                    <button class="btn btn-success w-100 rounded-pill" type="submit"><i class="bi bi-save"></i> Registrar</button>
+                </form>
+            </div>
+        </div>
+    </aside>
+</div>
+
+{/main}
+{/include}

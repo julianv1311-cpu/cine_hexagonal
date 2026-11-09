@@ -1,0 +1,138 @@
+{#include layout}
+{#title}Reserva #{r.id}{/title}
+{#main}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/reservations" class="link-secondary">Reservas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Reserva #{r.id}</li>
+    </ol>
+</nav>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="h3 fw-bold mb-0">Reserva #{r.id} <span class="badge rounded-pill {r.statusCss} align-middle fs-6">{r.statusLabel}</span></h1>
+    <a class="btn btn-outline-primary rounded-pill" href="/reports/receipt/{r.id}.pdf"><i class="bi bi-file-earmark-pdf"></i> Descargar comprobante (PDF)</a>
+</div>
+
+<div class="row g-4">
+    <section class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="row g-0">
+                <div class="col-md-5">
+                    <div class="ratio ratio-4x3 h-100">
+                        {#if photoUrl}
+                        <img src="{photoUrl}" class="object-fit-cover" alt="Habitación {r.roomType} {r.roomNumber}">
+                        {#else}
+                        <div class="bg-secondary-subtle text-secondary-emphasis d-flex flex-column align-items-center justify-content-center">
+                            <i class="bi {typeIcon} display-4"></i><span class="small">Habitación {r.roomType}</span>
+                        </div>
+                        {/if}
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card-body p-4">
+                        <span class="badge bg-body-secondary text-body mb-2">{r.roomType}</span>
+                        <h2 class="h4 fw-bold mb-3">Habitación {r.roomNumber}</h2>
+                        <div class="row g-3 text-center">
+                            <div class="col-6">
+                                <div class="border rounded-3 p-2">
+                                    <div class="small text-body-secondary"><i class="bi bi-box-arrow-in-right text-success"></i> Entrada</div>
+                                    <div class="fw-semibold">{r.checkIn}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded-3 p-2">
+                                    <div class="small text-body-secondary"><i class="bi bi-box-arrow-right text-danger"></i> Salida</div>
+                                    <div class="fw-semibold">{r.checkOut}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded-3 p-2">
+                                    <div class="small text-body-secondary"><i class="bi bi-moon-stars"></i> Noches</div>
+                                    <div class="fw-semibold">{r.nights}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded-3 p-2">
+                                    <div class="small text-body-secondary"><i class="bi bi-people"></i> Personas</div>
+                                    <div class="fw-semibold">{r.guestsCount}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="small text-body-secondary mt-3 mb-0"><i class="bi bi-clock-history"></i> Registrada el {r.createdAt}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-person-vcard text-warning"></i> Huésped</h2>
+                <div class="row g-3">
+                    <div class="col-sm-6"><div class="small text-body-secondary">Nombre</div><div class="fw-semibold">{guest.fullName}</div></div>
+                    <div class="col-sm-6"><div class="small text-body-secondary">Documento</div><div class="fw-semibold">{guest.document}</div></div>
+                    <div class="col-sm-6"><div class="small text-body-secondary">Correo</div><div>{guest.email}</div></div>
+                    <div class="col-sm-6"><div class="small text-body-secondary">Teléfono</div><div>{guest.phone}</div></div>
+                    <div class="col-sm-6"><div class="small text-body-secondary">Ciudad</div><div>{guest.city}</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <aside class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 text-bg-dark mb-4">
+            <div class="card-body p-4">
+                <h2 class="h6 text-uppercase text-warning fw-semibold mb-3"><i class="bi bi-receipt"></i> Cuenta</h2>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span>{bill.nights} noches x ${bill.pricePerNight}</span>
+                </div>
+                <div class="d-flex justify-content-between small mb-2 text-white-50">
+                    <span>Noches con recargo (vie/sáb +15%)</span><span>{bill.weekendNights}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span><span>${bill.subtotal}</span>
+                </div>
+                {#if bill.hasDiscount}
+                <div class="d-flex justify-content-between mb-2 text-success">
+                    <span>Descuento estadía larga (10%)</span><span>-${bill.discount}</span>
+                </div>
+                {/if}
+                <hr class="border-warning opacity-75">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Total</span><span class="fs-3 fw-bold text-warning">${bill.total}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 d-grid gap-2">
+                <h2 class="h6 text-uppercase text-body-secondary fw-semibold mb-1"><i class="bi bi-arrow-repeat"></i> Cambiar estado</h2>
+                {#if r.canCheckIn}
+                <form method="post" action="/reservations/{r.id}/check-in" class="d-grid">
+                    <input type="hidden" name="from" value="{back}">
+                    <button class="btn btn-success rounded-pill" type="submit"><i class="bi bi-box-arrow-in-right"></i> Registrar check-in</button>
+                </form>
+                {/if}
+                {#if r.canCheckOut}
+                <form method="post" action="/reservations/{r.id}/check-out" class="d-grid">
+                    <input type="hidden" name="from" value="{back}">
+                    <button class="btn btn-primary rounded-pill" type="submit"><i class="bi bi-box-arrow-right"></i> Registrar check-out</button>
+                </form>
+                {/if}
+                {#if r.canCancel}
+                <form method="post" action="/reservations/{r.id}/cancel" class="d-grid"
+                      onsubmit="return confirm('¿Cancelar la reserva #{r.id}? Esta acción no se puede deshacer.');">
+                    <input type="hidden" name="from" value="{back}">
+                    <button class="btn btn-outline-danger rounded-pill" type="submit"><i class="bi bi-x-circle"></i> Cancelar reserva</button>
+                </form>
+                {/if}
+                {#if !r.canCheckIn && !r.canCheckOut && !r.canCancel}
+                <p class="text-body-secondary small mb-0">Esta reserva ya no admite cambios de estado.</p>
+                {/if}
+            </div>
+        </div>
+    </aside>
+</div>
+
+{/main}
+{/include}

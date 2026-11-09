@@ -1,0 +1,114 @@
+{#include layout}
+{#title}Habitaciones{/title}
+{#main}
+
+<!-- Portada: imagen de fondo con capa oscura, solo con utilidades de Bootstrap -->
+<section class="position-relative rounded-4 overflow-hidden shadow mb-4">
+    <img src="/img/hotel/reception.jpg" alt="" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-75"></div>
+    <div class="position-relative text-white px-4 py-5 p-md-5">
+        <span class="badge rounded-pill text-bg-warning mb-3"><i class="bi bi-star-fill"></i> Hoy, {today}</span>
+        <h1 class="display-5 fw-bold mb-2">Bienvenido al <span class="text-warning">Hotel Westin</span></h1>
+        <p class="lead text-white-50 mb-4 col-lg-8">Controle habitaciones, huéspedes y reservas sin cruces de fechas y con el cobro calculado automáticamente.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-warning btn-lg rounded-pill px-4 fw-semibold" href="/reservations/new"><i class="bi bi-calendar-plus"></i> Nueva reserva</a>
+            <a class="btn btn-outline-light btn-lg rounded-pill px-4" href="/rooms/new"><i class="bi bi-plus-lg"></i> Nueva habitación</a>
+        </div>
+    </div>
+</section>
+
+<!-- Resumen del día -->
+<section class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-5" aria-label="Resumen del día">
+    <div class="col">
+        <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body d-flex align-items-center gap-3">
+            <span class="rounded-3 bg-secondary-subtle text-secondary-emphasis p-3 lh-1 fs-4"><i class="bi bi-door-closed"></i></span>
+            <div><div class="fs-3 fw-bold lh-1">{totalRooms}</div><div class="small text-body-secondary">Habitaciones</div></div>
+        </div></div>
+    </div>
+    <div class="col">
+        <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body d-flex align-items-center gap-3">
+            <span class="rounded-3 bg-info-subtle text-info-emphasis p-3 lh-1 fs-4"><i class="bi bi-person-check"></i></span>
+            <div><div class="fs-3 fw-bold lh-1">{occupiedToday}</div><div class="small text-body-secondary">Ocupadas hoy</div></div>
+        </div></div>
+    </div>
+    <div class="col">
+        <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body d-flex align-items-center gap-3">
+            <span class="rounded-3 bg-warning-subtle text-warning-emphasis p-3 lh-1 fs-4"><i class="bi bi-tools"></i></span>
+            <div><div class="fs-3 fw-bold lh-1">{maintenanceRooms}</div><div class="small text-body-secondary">Mantenimiento</div></div>
+        </div></div>
+    </div>
+    <div class="col">
+        <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body d-flex align-items-center gap-3">
+            <span class="rounded-3 bg-primary-subtle text-primary-emphasis p-3 lh-1 fs-4"><i class="bi bi-box-arrow-in-right"></i></span>
+            <div><div class="fs-3 fw-bold lh-1">{arrivalsToday}</div><div class="small text-body-secondary">Llegadas hoy</div></div>
+        </div></div>
+    </div>
+    <div class="col">
+        <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body d-flex align-items-center gap-3">
+            <span class="rounded-3 bg-success-subtle text-success-emphasis p-3 lh-1 fs-4"><i class="bi bi-calendar-check"></i></span>
+            <div><div class="fs-3 fw-bold lh-1">{activeReservations}</div><div class="small text-body-secondary">Reservas activas</div></div>
+        </div></div>
+    </div>
+</section>
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+    <div>
+        <h2 class="h3 fw-bold mb-0">Nuestras habitaciones</h2>
+        <p class="text-body-secondary mb-0">Estado de cada habitación al día de hoy</p>
+    </div>
+    <a class="btn btn-outline-primary rounded-pill" href="/reports/rooms.pdf"><i class="bi bi-file-earmark-pdf"></i> Descargar listado (PDF)</a>
+</div>
+
+{#if rooms.isEmpty()}
+<div class="alert alert-info">Todavía no hay habitaciones registradas. <a href="/rooms/new" class="alert-link">Registre la primera</a>.</div>
+{/if}
+
+<section class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    {#for room in rooms}
+    <div class="col">
+        <article class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="position-relative">
+                <div class="ratio ratio-16x9">
+                    {#if room.photoUrl}
+                    <img src="{room.photoUrl}" class="object-fit-cover" alt="Habitación {room.type} {room.number}">
+                    {#else}
+                    <div class="bg-secondary-subtle text-secondary-emphasis d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi {room.typeIcon} display-4"></i><span class="small">Habitación {room.type}</span>
+                    </div>
+                    {/if}
+                </div>
+                <span class="position-absolute top-0 start-0 m-3 badge rounded-pill {room.statusCss} shadow-sm">{room.statusLabel}</span>
+                <span class="position-absolute bottom-0 end-0 m-3 badge rounded-pill text-bg-dark fs-6 shadow-sm">
+                    <span class="text-warning">${room.price}</span> <span class="fw-normal small">/ noche</span>
+                </span>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h3 class="h5 fw-bold mb-0">Habitación {room.number}</h3>
+                    <span class="badge bg-warning-subtle text-warning-emphasis"><i class="bi {room.typeIcon}"></i> {room.type}</span>
+                </div>
+                <p class="small text-body-secondary mb-2"><i class="bi bi-people"></i> Hasta {room.capacity} huésped(es)</p>
+                <p class="card-text small flex-grow-1">{room.description}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 pb-3 d-flex flex-wrap gap-2">
+                {#if room.maintenance}
+                <button class="btn btn-warning btn-sm rounded-pill px-3" type="button" disabled><i class="bi bi-calendar-plus"></i> Reservar</button>
+                {#else}
+                <a class="btn btn-warning btn-sm rounded-pill px-3 fw-semibold" href="/reservations/new?roomId={room.id}"><i class="bi bi-calendar-plus"></i> Reservar</a>
+                {/if}
+                <a class="btn btn-outline-secondary btn-sm rounded-pill px-3" href="/rooms/{room.id}/edit"><i class="bi bi-pencil"></i> Editar</a>
+                <form method="post" action="/rooms/{room.id}/maintenance" class="ms-auto">
+                    {#if room.maintenance}
+                    <button class="btn btn-outline-success btn-sm rounded-pill" type="submit" title="Volver a habilitar"><i class="bi bi-check2-circle"></i> Habilitar</button>
+                    {#else}
+                    <button class="btn btn-outline-danger btn-sm rounded-pill" type="submit" title="Pasar a mantenimiento"><i class="bi bi-tools"></i></button>
+                    {/if}
+                </form>
+            </div>
+        </article>
+    </div>
+    {/for}
+</section>
+
+{/main}
+{/include}
